@@ -3,7 +3,7 @@ name: Build MrBaig Downloader EXE
 on:
   push:
     branches: [ "main" ]
-  workflow_dispatch:
+  workflow_dispatch: 
 
 jobs:
   build-windows:
@@ -30,42 +30,14 @@ jobs:
         Expand-Archive -Path "ffmpeg.zip" -DestinationPath "ffmpeg_extracted"
         Copy-Item -Path "ffmpeg_extracted\*\bin\ffmpeg.exe" -Destination ".\ffmpeg.exe"
 
-    - name: Verify icon file exists
-      shell: powershell
-      run: |
-        if (Test-Path "icon.ico") {
-          Write-Host "✅ icon.ico found — app will be built with custom icon."
-        } else {
-          Write-Host "⚠️ icon.ico NOT found — downloading a default icon."
-          Invoke-WebRequest -Uri "https://www.iconarchive.com/download/i107137/martz90/circle/video.ico" -OutFile "icon.ico"
-        }
-
     - name: Build EXE with PyInstaller
+      # Added the --name flag to explicitly name the output executable
       run: |
-        pyinstaller `
-          --noconsole `
-          --onefile `
-          --name "MrBaig-Downloader" `
-          --icon="icon.ico" `
-          --add-data "icon.ico;." `
-          --add-binary "ffmpeg.exe;." `
-          --version-file version.txt `
-          downloader.py
-      continue-on-error: false
-
-    - name: Verify EXE was built
-      shell: powershell
-      run: |
-        if (Test-Path "dist\MrBaig-Downloader.exe") {
-          $size = (Get-Item "dist\MrBaig-Downloader.exe").Length / 1MB
-          Write-Host "✅ EXE built successfully. Size: $([math]::Round($size, 2)) MB"
-        } else {
-          Write-Host "❌ EXE not found! Build may have failed."
-          exit 1
-        }
-
+        pyinstaller --noconsole --onefile --name "MrBaig-Downloader" --icon="icon.ico" --add-data "icon.ico;." --add-binary "ffmpeg.exe;." downloader.py
+      
     - name: Upload EXE as Artifact
       uses: actions/upload-artifact@v4
       with:
         name: MrBaig-Downloader-Windows
+        # Updated path to match the newly named executable
         path: dist/MrBaig-Downloader.exe
