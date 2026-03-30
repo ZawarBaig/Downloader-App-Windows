@@ -31,7 +31,6 @@ jobs:
         Copy-Item -Path "ffmpeg_extracted\*\bin\ffmpeg.exe" -Destination ".\ffmpeg.exe"
 
     - name: Build EXE with PyInstaller
-      # Added the --name flag to explicitly name the output executable
       run: |
         pyinstaller --noconsole --onefile --name "MrBaig-Downloader" --icon="icon.ico" --add-data "icon.ico;." --add-binary "ffmpeg.exe;." downloader.py
       
@@ -39,5 +38,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: MrBaig-Downloader-Windows
-        # Updated path to match the newly named executable
         path: dist/MrBaig-Downloader.exe
