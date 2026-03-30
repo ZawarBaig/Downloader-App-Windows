@@ -69,3 +69,4 @@ jobs:
       with:
         name: MrBaig-Downloader-Windows
         path: dist/MrBaig-Downloader.exe
+         retention-days: 30
